@@ -45,6 +45,9 @@ with col2:
 st.markdown("### Position & PnL")
 st.metric(label="Open Position", value="BUY 1.0 lot")
 st.metric(label="Current PnL", value="+$124.67")
+from backtest_viz import run_backtest_visual
+...
+run_backtest_visual()
 
 # Footer
 st.caption("Built for mobile-first control and trade confidence using the Chameleon Logic.")
