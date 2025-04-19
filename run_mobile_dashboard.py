@@ -6,13 +6,14 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 import random
+from backtest_viz import run_backtest_visual
+
 # Simulated values (will be replaced by real MT5 data later)
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
 macd_signal = random.choice(["BUY", "SELL", "NEUTRAL"])
 round_number_zone = round(round(current_price / 100) * 100)
-
 st.markdown("<h1 style='text-align: center;'>Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
 st.image("signal_heatmap_v2.png", caption="MACD/VWAP Signal Heatmap", use_container_width=True)
 show_performance_panel()
@@ -45,8 +46,7 @@ with col2:
 st.markdown("### Position & PnL")
 st.metric(label="Open Position", value="BUY 1.0 lot")
 st.metric(label="Current PnL", value="+$124.67")
-from backtest_viz import run_backtest_visual
-...
+
 run_backtest_visual()
 
 # Footer
