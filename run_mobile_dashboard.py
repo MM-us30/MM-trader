@@ -1,3 +1,4 @@
+from dashboard_ui import show_performance_panel
 
 import streamlit as st
 import numpy as np
