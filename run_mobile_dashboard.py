@@ -1,12 +1,11 @@
-from dashboard_ui import show_performance_panel
-
 import streamlit as st
+from dashboard_ui import show_performance_panel
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 import random
-
+st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 # Simulated values (will be replaced by real MT5 data later)
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
@@ -14,7 +13,6 @@ vwap_value = current_price - random.uniform(-20, 20)
 macd_signal = random.choice(["BUY", "SELL", "NEUTRAL"])
 round_number_zone = round(round(current_price / 100) * 100)
 
-st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 st.markdown("<h1 style='text-align: center;'>Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
 st.image("signal_heatmap_v2.png", caption="MACD/VWAP Signal Heatmap", use_container_width=True)
 show_performance_panel()
