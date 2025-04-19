@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import datetime
 import random
 from backtest_viz import run_backtest_visual
+from backtest_toggle import run_toggle_backtest_visual
 
 # Simulated values (will be replaced by real MT5 data later)
 symbol = "US30"
@@ -48,6 +49,7 @@ st.metric(label="Open Position", value="BUY 1.0 lot")
 st.metric(label="Current PnL", value="+$124.67")
 
 run_backtest_visual()
+from dashboard_ui import show_performance_panel
 
 # Footer
 st.caption("Built for mobile-first control and trade confidence using the Chameleon Logic.")
