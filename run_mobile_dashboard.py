@@ -1,3 +1,4 @@
+st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 import streamlit as st
 from dashboard_ui import show_performance_panel
 import numpy as np
@@ -5,7 +6,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import datetime
 import random
-st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 # Simulated values (will be replaced by real MT5 data later)
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
