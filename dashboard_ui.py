@@ -1,3 +1,4 @@
+from dashboard_ui import show_performance_panel
 
 import streamlit as st
 from performance import calculate_performance
@@ -21,3 +22,4 @@ def show_performance_panel():
 
     if pause_flag:
         st.warning("🚨 Daily loss limit hit! Trading should be paused.")
+show_performance_panel()
