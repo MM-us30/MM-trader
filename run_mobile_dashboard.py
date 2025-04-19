@@ -24,15 +24,6 @@ st.markdown(f"**Nearest Round Number:** {round_number_zone}")
 st.markdown(f"**VWAP:** {round(vwap_value, 2)}")
 st.markdown(f"**MACD Signal:** {macd_signal}")
 
-# Heatmap visualization
-st.markdown("### MACD/VWAP Heatmap")
-heatmap_data = np.random.randn(15, 15)
-fig, ax = plt.subplots()
-cax = ax.imshow(heatmap_data, cmap='seismic', aspect='auto')
-ax.set_xticks([])
-ax.set_yticks([])
-st.pyplot(fig)
-
 # Signal log
 st.markdown("### Last Signals")
 log_data = pd.DataFrame({
