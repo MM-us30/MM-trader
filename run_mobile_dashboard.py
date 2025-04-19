@@ -1,5 +1,5 @@
-st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 import streamlit as st
+st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 from dashboard_ui import show_performance_panel
 import numpy as np
 import pandas as pd
