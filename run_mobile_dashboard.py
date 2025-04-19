@@ -15,7 +15,7 @@ round_number_zone = round(round(current_price / 100) * 100)
 
 st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 st.markdown("<h1 style='text-align: center;'>Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
-#st.image("signal_heatmap.png", caption="MACD/VWAP Signal Heatmap", use_container_width=True)
+st.image("signal_heatmap.png", caption="MACD/VWAP Signal Heatmap", use_container_width=True)
 
 # Signal overview section
 st.subheader(f"Symbol: {symbol}")
