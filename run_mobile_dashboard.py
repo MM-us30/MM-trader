@@ -54,8 +54,10 @@ run_toggle_backtest_visual()
 st.caption("Built for mobile-first control and trade confidence using the Chameleon Logic.")
 from google_sheets_logger import log_trade_to_sheet
 
+json_keyfile_path = "secrets/chameleon-key.json"  # ✅ NEW correct path for Streamlit Cloud
+
 log_trade_to_sheet(
-    json_keyfile_path="C:/Users/mfman/Downloads/chameleon-key.json",  # 🔁 Update this
+    json_keyfile_path=json_keyfile_path,
     action="BUY",
     symbol="US30",
     price=33687.25,
@@ -63,4 +65,3 @@ log_trade_to_sheet(
     signal="MACD+VWAP",
     pnl=144.76
 )
-
