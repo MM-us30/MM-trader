@@ -1,22 +1,22 @@
 
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-from datetime import datetime
+import streamlit as st
+import json
 
-# CONFIG: spreadsheet and credentials
-SPREADSHEET_NAME = "Chameleon_Trade_Logs"
-WORKSHEET_NAME = "Live_Trades"
-
-# Load Google Sheets API credentials from a JSON file
-def authenticate_gsheets(json_keyfile_path):
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(json_keyfile_path, scope)
+def authenticate_gsheets_from_secrets():
+    scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/drive"
+    ]
+    service_account_info = json.loads(st.secrets["gcp_service_key"])
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(service_account_info, scope)
     client = gspread.authorize(creds)
     return client
 
+
 # Append trade row to sheet
 def log_trade_to_sheet(json_keyfile_path, action, symbol, price, volume, signal, pnl=None):
-    client = authenticate_gsheets(json_keyfile_path)
+    client = authenticate_gsheets_from_secrets()
+
 
     try:
         sheet = client.open(SPREADSHEET_NAME)
