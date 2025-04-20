@@ -16,12 +16,13 @@ def authenticate_gsheets(json_keyfile_path):
 
 # Append trade row to sheet
 def log_trade_to_sheet(json_keyfile_path, action, symbol, price, volume, signal, pnl=None):
+    client = authenticate_gsheets(json_keyfile_path)
+
     try:
-        client = authenticate_gsheets(json_keyfile_path)
         sheet = client.open(SPREADSHEET_NAME)
         worksheet = sheet.worksheet(WORKSHEET_NAME)
     except Exception:
-        # Create if doesn't exist
+        # Create sheet if it doesn't exist
         sheet = client.create(SPREADSHEET_NAME)
         worksheet = sheet.sheet1
         worksheet.update_title(WORKSHEET_NAME)
