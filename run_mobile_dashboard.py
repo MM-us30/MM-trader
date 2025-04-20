@@ -50,6 +50,17 @@ st.metric(label="Current PnL", value="+$124.67")
 
 run_backtest_visual()
 run_toggle_backtest_visual()
-
 # Footer
 st.caption("Built for mobile-first control and trade confidence using the Chameleon Logic.")
+from google_sheets_logger import log_trade_to_sheet
+
+log_trade_to_sheet(
+    json_keyfile_path="C:/Users/mfman/Downloads/chameleon-key.json",  # 🔁 Update this
+    action="BUY",
+    symbol="US30",
+    price=33687.25,
+    volume=1.0,
+    signal="MACD+VWAP",
+    pnl=144.76
+)
+
