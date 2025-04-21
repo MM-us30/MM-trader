@@ -46,15 +46,22 @@ st.markdown(f"**Nearest Round Number:** `{round_number_zone}`")
 st.markdown(f"**VWAP:** `{round(vwap_value, 2)}`")
 st.markdown(f"**MACD Signal:** `{macd_signal}`")
 
-# 🔥 Enhanced Heatmap (restored look)
+# 🔥 Restored MACD/VWAP Signal Heatmap (classic layout)
 st.markdown("### 📊 MACD/VWAP Signal Heatmap")
 heatmap_data = np.random.randn(10, 10)
-fig, ax = plt.subplots(figsize=(8, 3.5))
+fig, ax = plt.subplots(figsize=(8, 2.8))
 cax = ax.imshow(heatmap_data, cmap='RdYlGn', aspect='auto')
-ax.set_title("MACD/VWAP Signal Heatmap")
+
+# Custom ticks to simulate time and price levels
+ax.set_xticks(range(10))
+ax.set_xticklabels([f"T{i+1}" for i in range(10)])
+ax.set_yticks(range(10))
+ax.set_yticklabels([str(int(current_price - 10 + i)) for i in range(10)])
+
 ax.set_xlabel("Signal Index (Time)")
 ax.set_ylabel("Price Level")
-plt.colorbar(cax, ax=ax)
+ax.set_title("MACD/VWAP Signal Heatmap")
+plt.colorbar(cax, ax=ax, label="Signal Strength")
 st.pyplot(fig)
 
 # 📋 Recent signals
