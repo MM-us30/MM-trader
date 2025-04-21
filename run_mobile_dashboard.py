@@ -28,51 +28,54 @@ def authenticate_gsheets_from_upload():
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
 
-# 📈 Simulated trading data
+# 🧪 Simulated Trading Data (to be replaced by MT5 logic)
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
 macd_signal = random.choice(["BUY", "SELL", "NEUTRAL"])
 round_number_zone = round(round(current_price / 100) * 100)
 
+# 📱 Dashboard Config
 st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
-st.markdown("<h1 style='text-align: center;'>Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>🦎 Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
 
 # 📊 Signal Overview
 st.subheader(f"Symbol: {symbol}")
-st.markdown(f"**Current Price:** {current_price}")
-st.markdown(f"**Nearest Round Number:** {round_number_zone}")
-st.markdown(f"**VWAP:** {round(vwap_value, 2)}")
-st.markdown(f"**MACD Signal:** {macd_signal}")
+st.markdown(f"**Current Price:** `{current_price}`")
+st.markdown(f"**Nearest Round Number:** `{round_number_zone}`")
+st.markdown(f"**VWAP:** `{round(vwap_value, 2)}`")
+st.markdown(f"**MACD Signal:** `{macd_signal}`")
 
-# 🔥 MACD/VWAP Heatmap
+# 🔥 MACD/VWAP Heatmap (visually polished)
 st.markdown("### MACD/VWAP Heatmap")
-heatmap_data = np.random.randn(15, 15)
-fig, ax = plt.subplots()
-ax.imshow(heatmap_data, cmap='RdYlGn', aspect='auto')
+heatmap_data = np.random.randn(10, 10)
+fig, ax = plt.subplots(figsize=(6, 4))
+heatmap = ax.imshow(heatmap_data, cmap="RdYlGn", aspect="auto")
+plt.colorbar(heatmap, ax=ax, orientation="vertical", label="Signal Strength")
+ax.set_title("Strategy Heatmap", fontsize=12)
 ax.set_xticks([])
 ax.set_yticks([])
 st.pyplot(fig)
 
-# 📅 Recent Signals Table
-st.markdown("### Last Signals")
+# 🕘 Recent Signal Table
+st.markdown("### 📈 Recent Signals")
 log_data = pd.DataFrame({
-    "Time": pd.date_range(datetime.datetime.now() - datetime.timedelta(minutes=75), periods=5, freq='15min'),
+    "Time": pd.date_range(datetime.datetime.now() - datetime.timedelta(minutes=75), periods=5, freq="15min"),
     "Signal": ["BUY", "SELL", "BUY", "SELL", "BUY"],
     "Price": np.random.uniform(33500, 33700, 5).round(2)
 })
 st.table(log_data)
 
 # 🤖 Bot Controls
-st.markdown("### Controls")
+st.markdown("### 🕹️ Bot Controls")
 col1, col2 = st.columns(2)
 with col1:
-    st.button("Start Chameleon Bot")
+    st.button("▶️ Start Chameleon Bot")
 with col2:
-    st.button("Pause Bot")
+    st.button("⏸ Pause Bot")
 
-# 💰 Position and PnL
-st.markdown("### Position & PnL")
+# 💸 Position & PnL
+st.markdown("### 💰 Position & PnL")
 st.metric(label="Open Position", value="BUY 1.0 lot")
 st.metric(label="Current PnL", value="+$124.67")
 
@@ -82,7 +85,6 @@ client = authenticate_gsheets_from_upload()
 
 if client:
     try:
-        # Attempt to open the existing spreadsheet and worksheet
         sheet = client.open("Chameleon_Trade_Logs")
         worksheet = sheet.worksheet("Live_Trades")
 
@@ -99,11 +101,11 @@ if client:
         st.success("✅ Trade logged to Google Sheet successfully.")
 
     except gspread.exceptions.SpreadsheetNotFound:
-        st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found. Please create it manually or share it with your service account.")
+        st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found. Please create it or share access with the service account.")
     except gspread.exceptions.WorksheetNotFound:
-        st.error("❌ Worksheet 'Live_Trades' not found. Please ensure it exists inside the spreadsheet.")
+        st.error("❌ Worksheet 'Live_Trades' not found. Please create it in the spreadsheet.")
     except Exception as e:
         st.error(f"❌ Failed to log trade: {e}")
 
 # 🧾 Footer
-st.caption("Built for mobile-first control and trade confidence using the Chameleon Logic.")
+st.caption("🔧 Built for mobile-first control and trade confidence using the Chameleon Logic.")
