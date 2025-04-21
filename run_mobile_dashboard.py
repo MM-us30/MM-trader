@@ -8,7 +8,7 @@ import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# 🔐 Authenticate with Google Sheets using uploaded JSON key
+# 🔐 Google Sheets authentication
 def authenticate_gsheets_from_upload():
     uploaded_file = st.file_uploader("🔐 Upload your Google JSON key", type=["json"])
     if uploaded_file is not None:
@@ -28,36 +28,36 @@ def authenticate_gsheets_from_upload():
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
 
-# 🧪 Simulated Trading Data (to be replaced by MT5 logic)
+# 🔢 Simulated trading data
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
 macd_signal = random.choice(["BUY", "SELL", "NEUTRAL"])
 round_number_zone = round(round(current_price / 100) * 100)
 
-# 📱 Dashboard Config
+# ⚙️ App config
 st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 st.markdown("<h1 style='text-align: center;'>🦎 Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
 
-# 📊 Signal Overview
+# 🧭 Signal overview
 st.subheader(f"Symbol: {symbol}")
 st.markdown(f"**Current Price:** `{current_price}`")
 st.markdown(f"**Nearest Round Number:** `{round_number_zone}`")
 st.markdown(f"**VWAP:** `{round(vwap_value, 2)}`")
 st.markdown(f"**MACD Signal:** `{macd_signal}`")
 
-# 🔥 MACD/VWAP Heatmap (visually polished)
-st.markdown("### MACD/VWAP Heatmap")
+# 🔥 Enhanced Heatmap (restored look)
+st.markdown("### 📊 MACD/VWAP Signal Heatmap")
 heatmap_data = np.random.randn(10, 10)
-fig, ax = plt.subplots(figsize=(6, 4))
-heatmap = ax.imshow(heatmap_data, cmap="RdYlGn", aspect="auto")
-plt.colorbar(heatmap, ax=ax, orientation="vertical", label="Signal Strength")
-ax.set_title("Strategy Heatmap", fontsize=12)
-ax.set_xticks([])
-ax.set_yticks([])
+fig, ax = plt.subplots(figsize=(8, 3.5))
+cax = ax.imshow(heatmap_data, cmap='RdYlGn', aspect='auto')
+ax.set_title("MACD/VWAP Signal Heatmap")
+ax.set_xlabel("Signal Index (Time)")
+ax.set_ylabel("Price Level")
+plt.colorbar(cax, ax=ax)
 st.pyplot(fig)
 
-# 🕘 Recent Signal Table
+# 📋 Recent signals
 st.markdown("### 📈 Recent Signals")
 log_data = pd.DataFrame({
     "Time": pd.date_range(datetime.datetime.now() - datetime.timedelta(minutes=75), periods=5, freq="15min"),
@@ -66,8 +66,8 @@ log_data = pd.DataFrame({
 })
 st.table(log_data)
 
-# 🤖 Bot Controls
-st.markdown("### 🕹️ Bot Controls")
+# 🧠 Bot Controls
+st.markdown("### 🤖 Bot Controls")
 col1, col2 = st.columns(2)
 with col1:
     st.button("▶️ Start Chameleon Bot")
@@ -103,7 +103,7 @@ if client:
     except gspread.exceptions.SpreadsheetNotFound:
         st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found. Please create it or share access with the service account.")
     except gspread.exceptions.WorksheetNotFound:
-        st.error("❌ Worksheet 'Live_Trades' not found. Please create it in the spreadsheet.")
+        st.error("❌ Worksheet 'Live_Trades' not found. Please ensure it exists in the spreadsheet.")
     except Exception as e:
         st.error(f"❌ Failed to log trade: {e}")
 
