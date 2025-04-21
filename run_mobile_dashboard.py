@@ -7,13 +7,20 @@ import random
 import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
-# 🔁 Manual refresh button
-if st.button("🔄 Refresh Dashboard"):
-    st.experimental_rerun()
 
-# 🧾 Must be first!
+# 🕒 Refresh logic
+REFRESH_RATES = {
+    "30 seconds": 30,
+    "1 minute": 60,
+    "5 minutes": 300,
+    "10 minutes": 600
+}
+refresh_option = st.selectbox("🔁 Auto-refresh rate", list(REFRESH_RATES.keys()), index=2)
+manual_refresh = st.button("🔄 Manual Refresh")
 
+if manual_refresh or (REFRESH_RATES[refresh_option] and st.session_state.get("last_refresh", 0) + REFRESH_RATES[refresh_option] < datetime.datetime.now().timestamp()):
+    st.session_state["last_refresh"] = datetime.datetime.now().timestamp()
+    st.rerun()
 
 # 🔐 Google Sheets authentication
 def authenticate_gsheets_from_upload():
@@ -35,7 +42,10 @@ def authenticate_gsheets_from_upload():
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
 
-# 📊 Simulated market data
+# ⚙️ App config (must come first!)
+st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
+
+# 🔢 Simulated trading data
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
@@ -44,14 +54,14 @@ round_number_zone = round(round(current_price / 100) * 100)
 
 st.markdown("<h1 style='text-align: center;'>🦎 Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
 
-# 📋 Signal Overview
+# 🧭 Signal overview
 st.subheader(f"Symbol: {symbol}")
 st.markdown(f"**Current Price:** `{current_price}`")
 st.markdown(f"**Nearest Round Number:** `{round_number_zone}`")
 st.markdown(f"**VWAP:** `{round(vwap_value, 2)}`")
 st.markdown(f"**MACD Signal:** `{macd_signal}`")
 
-# 🔥 Heatmap Visualization
+# 🔥 MACD/VWAP Signal Heatmap — Inferno Edition
 st.markdown("### 📊 MACD/VWAP Signal Heatmap")
 heatmap_data = np.random.randn(10, 10)
 fig, ax = plt.subplots(figsize=(8, 2.8))
@@ -66,7 +76,7 @@ ax.set_title("MACD/VWAP Signal Heatmap")
 plt.colorbar(cax, ax=ax, label="Signal Strength")
 st.pyplot(fig)
 
-# 📈 Last 5 Signals
+# 📋 Recent signals
 st.markdown("### 📈 Recent Signals")
 log_data = pd.DataFrame({
     "Time": pd.date_range(datetime.datetime.now() - datetime.timedelta(minutes=75), periods=5, freq="15min"),
@@ -75,7 +85,7 @@ log_data = pd.DataFrame({
 })
 st.table(log_data)
 
-# 🕹️ Bot Controls
+# 🤖 Bot Controls
 st.markdown("### 🤖 Bot Controls")
 col1, col2 = st.columns(2)
 with col1:
@@ -116,3 +126,4 @@ if client:
 
 # 🧾 Footer
 st.caption("🔧 Built for mobile-first control and trade confidence using the Chameleon Logic.")
+
