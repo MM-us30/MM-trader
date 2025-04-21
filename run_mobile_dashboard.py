@@ -8,6 +8,17 @@ import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
+# 🔁 Manual toggle for auto-refresh
+refresh_toggle = st.sidebar.checkbox("🔄 Auto-refresh every 30 sec", value=True)
+
+# ⏱️ Auto-refresh every 30 seconds if enabled
+if refresh_toggle:
+    count = st.experimental_get_query_params().get("refresh_count", [0])[0]
+    if int(count) < 1000:
+        st.experimental_set_query_params(refresh_count=int(count) + 1)
+        st.experimental_rerun()
+    st.markdown(f"<script>setTimeout(() => window.location.reload(), 30000);</script>", unsafe_allow_html=True)
+
 # 🔐 Google Sheets authentication
 def authenticate_gsheets_from_upload():
     uploaded_file = st.file_uploader("🔐 Upload your Google JSON key", type=["json"])
@@ -28,7 +39,7 @@ def authenticate_gsheets_from_upload():
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
 
-# 🔢 Simulated trading data
+# 📈 Simulated trading data
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
@@ -50,14 +61,11 @@ st.markdown(f"**MACD Signal:** `{macd_signal}`")
 st.markdown("### 📊 MACD/VWAP Signal Heatmap")
 heatmap_data = np.random.randn(10, 10)
 fig, ax = plt.subplots(figsize=(8, 2.8))
-cax = ax.imshow(heatmap_data, cmap='inferno', aspect='auto')  # Inferno colormap
-
-# Custom ticks to simulate time and price levels
+cax = ax.imshow(heatmap_data, cmap='inferno', aspect='auto')
 ax.set_xticks(range(10))
 ax.set_xticklabels([f"T{i+1}" for i in range(10)])
 ax.set_yticks(range(10))
 ax.set_yticklabels([str(int(current_price - 10 + i)) for i in range(10)])
-
 ax.set_xlabel("Signal Index (Time)")
 ax.set_ylabel("Price Level")
 ax.set_title("MACD/VWAP Signal Heatmap")
@@ -73,7 +81,7 @@ log_data = pd.DataFrame({
 })
 st.table(log_data)
 
-# 🧠 Bot Controls
+# 🤖 Bot Controls
 st.markdown("### 🤖 Bot Controls")
 col1, col2 = st.columns(2)
 with col1:
@@ -106,7 +114,6 @@ if client:
         ]
         worksheet.append_row(row)
         st.success("✅ Trade logged to Google Sheet successfully.")
-
     except gspread.exceptions.SpreadsheetNotFound:
         st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found. Please create it or share access with the service account.")
     except gspread.exceptions.WorksheetNotFound:
