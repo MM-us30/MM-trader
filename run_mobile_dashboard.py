@@ -7,13 +7,13 @@ import random
 import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-
+st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 # 🔁 Manual refresh button
 if st.button("🔄 Refresh Dashboard"):
     st.experimental_rerun()
 
 # 🧾 Must be first!
-st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
+
 
 # 🔐 Google Sheets authentication
 def authenticate_gsheets_from_upload():
