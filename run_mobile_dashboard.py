@@ -7,9 +7,24 @@ import random
 import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import time
 
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
+st.markdown("<h1 style='text-align: center;'>🦎 Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
+
+# --- MANUAL + AUTO REFRESH ---
+refresh_col1, refresh_col2 = st.columns([1, 3])
+with refresh_col1:
+    if st.button("🔄 Refresh Now"):
+        st.rerun()
+
+with refresh_col2:
+    refresh_interval = st.selectbox("⏱ Auto-refresh every:", ["Off", "30 seconds", "1 minute", "5 minutes"], index=2)
+    interval_seconds = {"Off": 0, "30 seconds": 30, "1 minute": 60, "5 minutes": 300}[refresh_interval]
+    if interval_seconds > 0:
+        time.sleep(interval_seconds)
+        st.rerun()
 
 # --- AUTHENTICATION ---
 def authenticate_gsheets_from_upload():
@@ -31,26 +46,12 @@ def authenticate_gsheets_from_upload():
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
 
-# --- USER SETTINGS ---
-st.sidebar.header("⏱️ Refresh Settings")
-auto_refresh = st.sidebar.checkbox("Enable Auto-Refresh", value=True)
-refresh_interval = st.sidebar.selectbox("Refresh Interval", options=[30, 60, 180, 300], format_func=lambda x: f"{x} sec" if x < 60 else f"{x//60} min")
-if auto_refresh:
-    st_autorefresh = st.experimental_data_editor({
-        "enabled": True,
-        "interval": refresh_interval * 1000  # convert to ms
-    })
-    st.rerun()
-
 # --- SIMULATED DATA ---
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
 macd_signal = random.choice(["BUY", "SELL", "NEUTRAL"])
 round_number_zone = round(round(current_price / 100) * 100)
-
-# --- HEADER ---
-st.markdown("<h1 style='text-align: center;'>🦎 Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
 
 # --- SIGNAL OVERVIEW ---
 st.subheader(f"Symbol: {symbol}")
@@ -74,7 +75,7 @@ ax.set_title("MACD/VWAP Signal Heatmap")
 plt.colorbar(cax, ax=ax, label="Signal Strength")
 st.pyplot(fig)
 
-# --- SIGNAL TABLE ---
+# --- SIGNALS TABLE ---
 st.markdown("### 📈 Recent Signals")
 log_data = pd.DataFrame({
     "Time": pd.date_range(datetime.datetime.now() - datetime.timedelta(minutes=75), periods=5, freq="15min"),
@@ -91,7 +92,7 @@ with col1:
 with col2:
     st.button("⏸ Pause Bot")
 
-# --- PNL SECTION ---
+# --- PnL ---
 st.markdown("### 💰 Position & PnL")
 st.metric(label="Open Position", value="BUY 1.0 lot")
 st.metric(label="Current PnL", value="+$124.67")
@@ -99,7 +100,6 @@ st.metric(label="Current PnL", value="+$124.67")
 # --- GOOGLE SHEETS LOGGING ---
 st.markdown("### 📄 Google Sheets Logging")
 client = authenticate_gsheets_from_upload()
-
 if client:
     try:
         sheet = client.open("Chameleon_Trade_Logs")
@@ -116,9 +116,9 @@ if client:
         worksheet.append_row(row)
         st.success("✅ Trade logged to Google Sheet successfully.")
     except gspread.exceptions.SpreadsheetNotFound:
-        st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found.")
+        st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found. Please create it or share access.")
     except gspread.exceptions.WorksheetNotFound:
-        st.error("❌ Worksheet 'Live_Trades' not found.")
+        st.error("❌ Worksheet 'Live_Trades' not found. Please ensure it exists.")
     except Exception as e:
         st.error(f"❌ Failed to log trade: {e}")
 
