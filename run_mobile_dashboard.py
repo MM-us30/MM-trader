@@ -8,21 +8,10 @@ import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# 🕒 Refresh logic
-REFRESH_RATES = {
-    "30 seconds": 30,
-    "1 minute": 60,
-    "5 minutes": 300,
-    "10 minutes": 600
-}
-refresh_option = st.selectbox("🔁 Auto-refresh rate", list(REFRESH_RATES.keys()), index=2)
-manual_refresh = st.button("🔄 Manual Refresh")
+# --- PAGE CONFIG ---
+st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 
-if manual_refresh or (REFRESH_RATES[refresh_option] and st.session_state.get("last_refresh", 0) + REFRESH_RATES[refresh_option] < datetime.datetime.now().timestamp()):
-    st.session_state["last_refresh"] = datetime.datetime.now().timestamp()
-    st.rerun()
-
-# 🔐 Google Sheets authentication
+# --- AUTHENTICATION ---
 def authenticate_gsheets_from_upload():
     uploaded_file = st.file_uploader("🔐 Upload your Google JSON key", type=["json"])
     if uploaded_file is not None:
@@ -42,26 +31,35 @@ def authenticate_gsheets_from_upload():
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
 
-# ⚙️ App config (must come first!)
-st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
+# --- USER SETTINGS ---
+st.sidebar.header("⏱️ Refresh Settings")
+auto_refresh = st.sidebar.checkbox("Enable Auto-Refresh", value=True)
+refresh_interval = st.sidebar.selectbox("Refresh Interval", options=[30, 60, 180, 300], format_func=lambda x: f"{x} sec" if x < 60 else f"{x//60} min")
+if auto_refresh:
+    st_autorefresh = st.experimental_data_editor({
+        "enabled": True,
+        "interval": refresh_interval * 1000  # convert to ms
+    })
+    st.rerun()
 
-# 🔢 Simulated trading data
+# --- SIMULATED DATA ---
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
 macd_signal = random.choice(["BUY", "SELL", "NEUTRAL"])
 round_number_zone = round(round(current_price / 100) * 100)
 
+# --- HEADER ---
 st.markdown("<h1 style='text-align: center;'>🦎 Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
 
-# 🧭 Signal overview
+# --- SIGNAL OVERVIEW ---
 st.subheader(f"Symbol: {symbol}")
 st.markdown(f"**Current Price:** `{current_price}`")
 st.markdown(f"**Nearest Round Number:** `{round_number_zone}`")
 st.markdown(f"**VWAP:** `{round(vwap_value, 2)}`")
 st.markdown(f"**MACD Signal:** `{macd_signal}`")
 
-# 🔥 MACD/VWAP Signal Heatmap — Inferno Edition
+# --- HEATMAP ---
 st.markdown("### 📊 MACD/VWAP Signal Heatmap")
 heatmap_data = np.random.randn(10, 10)
 fig, ax = plt.subplots(figsize=(8, 2.8))
@@ -76,7 +74,7 @@ ax.set_title("MACD/VWAP Signal Heatmap")
 plt.colorbar(cax, ax=ax, label="Signal Strength")
 st.pyplot(fig)
 
-# 📋 Recent signals
+# --- SIGNAL TABLE ---
 st.markdown("### 📈 Recent Signals")
 log_data = pd.DataFrame({
     "Time": pd.date_range(datetime.datetime.now() - datetime.timedelta(minutes=75), periods=5, freq="15min"),
@@ -85,7 +83,7 @@ log_data = pd.DataFrame({
 })
 st.table(log_data)
 
-# 🤖 Bot Controls
+# --- BOT CONTROLS ---
 st.markdown("### 🤖 Bot Controls")
 col1, col2 = st.columns(2)
 with col1:
@@ -93,12 +91,12 @@ with col1:
 with col2:
     st.button("⏸ Pause Bot")
 
-# 💸 Position & PnL
+# --- PNL SECTION ---
 st.markdown("### 💰 Position & PnL")
 st.metric(label="Open Position", value="BUY 1.0 lot")
 st.metric(label="Current PnL", value="+$124.67")
 
-# 📤 Google Sheets Logging
+# --- GOOGLE SHEETS LOGGING ---
 st.markdown("### 📄 Google Sheets Logging")
 client = authenticate_gsheets_from_upload()
 
@@ -124,6 +122,6 @@ if client:
     except Exception as e:
         st.error(f"❌ Failed to log trade: {e}")
 
-# 🧾 Footer
+# --- FOOTER ---
 st.caption("🔧 Built for mobile-first control and trade confidence using the Chameleon Logic.")
 
