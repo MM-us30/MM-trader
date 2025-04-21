@@ -85,23 +85,32 @@ if client:
     try:
         sheet = client.open("Chameleon_Trade_Logs")
         worksheet = sheet.worksheet("Live_Trades")
-    except:
-        sheet = client.create("Chameleon_Trade_Logs")
-        worksheet = sheet.sheet1
-        worksheet.update_title("Live_Trades")
-        worksheet.append_row(["Time", "Action", "Symbol", "Price", "Volume", "Signal", "PnL"])
+    except gspread.exceptions.SpreadsheetNotFound:
+        st.warning("Creating new sheet 'Chameleon_Trade_Logs/Live_Trades'. Make sure your account has edit permissions.")
+        try:
+            sheet = client.create("Chameleon_Trade_Logs")
+            worksheet = sheet.sheet1
+            worksheet.update_title("Live_Trades")
+            worksheet.append_row(["Time", "Action", "Symbol", "Price", "Volume", "Signal", "PnL"])
+        except Exception as e:
+            st.error(f"❌ Failed to create spreadsheet: {e}")
+            worksheet = None
 
-    row = [
-        datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
-        "BUY",
-        symbol,
-        current_price,
-        1.0,
-        macd_signal,
-        "+124.67"
-    ]
-    worksheet.append_row(row)
-    st.success("✅ Trade logged to Google Sheet successfully.")
+    if worksheet:
+        try:
+            row = [
+                datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+                "BUY",
+                symbol,
+                current_price,
+                1.0,
+                macd_signal,
+                "+124.67"
+            ]
+            worksheet.append_row(row)
+            st.success("✅ Trade logged to Google Sheet successfully.")
+        except Exception as e:
+            st.error(f"❌ Failed to log trade: {e}")
 
 # 🧾 Footer
 st.caption("Built for mobile-first control and trade confidence using the Chameleon Logic.")
