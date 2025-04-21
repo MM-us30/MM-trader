@@ -46,11 +46,11 @@ st.markdown(f"**Nearest Round Number:** `{round_number_zone}`")
 st.markdown(f"**VWAP:** `{round(vwap_value, 2)}`")
 st.markdown(f"**MACD Signal:** `{macd_signal}`")
 
-# 🔥 Restored MACD/VWAP Signal Heatmap (classic layout)
+# 🔥 MACD/VWAP Signal Heatmap — Inferno Edition
 st.markdown("### 📊 MACD/VWAP Signal Heatmap")
 heatmap_data = np.random.randn(10, 10)
 fig, ax = plt.subplots(figsize=(8, 2.8))
-cax = ax.imshow(heatmap_data, cmap='RdYlGn', aspect='auto')
+cax = ax.imshow(heatmap_data, cmap='inferno', aspect='auto')  # Inferno colormap
 
 # Custom ticks to simulate time and price levels
 ax.set_xticks(range(10))
