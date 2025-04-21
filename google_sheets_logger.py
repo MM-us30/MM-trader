@@ -1,7 +1,14 @@
-
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+from datetime import datetime
 import streamlit as st
 import json
 
+# CONFIG
+SPREADSHEET_NAME = "Chameleon_Trade_Logs"
+WORKSHEET_NAME = "Live_Trades"
+
+# Authenticate with Streamlit secrets
 def authenticate_gsheets_from_secrets():
     scope = [
         "https://spreadsheets.google.com/feeds",
@@ -12,21 +19,15 @@ def authenticate_gsheets_from_secrets():
     client = gspread.authorize(creds)
     return client
 
-
-# Append trade row to sheet
-def log_trade_to_sheet(json_keyfile_path, action, symbol, price, volume, signal, pnl=None):
-    client = authenticate_gsheets_from_secrets()
-
-
+# Log a trade into existing sheet and worksheet
+def log_trade_to_sheet(action, symbol, price, volume, signal, pnl=None):
     try:
+        client = authenticate_gsheets_from_secrets()
         sheet = client.open(SPREADSHEET_NAME)
         worksheet = sheet.worksheet(WORKSHEET_NAME)
-    except Exception:
-        # Create sheet if it doesn't exist
-        sheet = client.create(SPREADSHEET_NAME)
-        worksheet = sheet.sheet1
-        worksheet.update_title(WORKSHEET_NAME)
-        worksheet.append_row(["Time", "Action", "Symbol", "Price", "Volume", "Signal", "PnL"])
+    except Exception as e:
+        st.error(f"❌ Google Sheets logging failed: {e}")
+        return
 
     row = [
         datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
@@ -38,3 +39,4 @@ def log_trade_to_sheet(json_keyfile_path, action, symbol, price, volume, signal,
         pnl if pnl else ""
     ]
     worksheet.append_row(row)
+    st.success("✅ Trade logged to Google Sheets successfully!")
