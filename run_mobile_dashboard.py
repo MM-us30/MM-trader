@@ -83,10 +83,11 @@ client = authenticate_gsheets_from_upload()
 
 if client:
     try:
+        # 🧠 Attempt to open the sheet
         sheet = client.open("Chameleon_Trade_Logs")
         worksheet = sheet.worksheet("Live_Trades")
     except gspread.exceptions.SpreadsheetNotFound:
-        st.warning("Creating new sheet 'Chameleon_Trade_Logs/Live_Trades'. Make sure your account has edit permissions.")
+        st.warning("⚠️ Sheet not found. Attempting to create 'Chameleon_Trade_Logs/Live_Trades'. Make sure your service account has edit permissions.")
         try:
             sheet = client.create("Chameleon_Trade_Logs")
             worksheet = sheet.sheet1
@@ -95,6 +96,9 @@ if client:
         except Exception as e:
             st.error(f"❌ Failed to create spreadsheet: {e}")
             worksheet = None
+    except Exception as e:
+        st.error(f"❌ Failed to access Google Sheet: {e}")
+        worksheet = None
 
     if worksheet:
         try:
