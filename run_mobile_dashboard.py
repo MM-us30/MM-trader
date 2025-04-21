@@ -7,20 +7,13 @@ import random
 import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
-# 🔁 Manual + Auto-refresh toggle
-st.sidebar.markdown("## 🔄 Refresh Settings")
-auto_refresh = st.sidebar.checkbox("Enable Auto-Refresh (every 30 sec)", value=True)
-manual_refresh = st.sidebar.button("🔄 Refresh Now")
 
-# ⏱️ Auto-refresh logic (no deprecated methods)
-if auto_refresh or manual_refresh:
-    st.markdown(
-        """
-        <meta http-equiv="refresh" content="30">
-        """,
-        unsafe_allow_html=True,
-    )
+# 🔁 Manual refresh button
+if st.button("🔄 Refresh Dashboard"):
+    st.experimental_rerun()
+
+# 🧾 Must be first!
+st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 
 # 🔐 Google Sheets authentication
 def authenticate_gsheets_from_upload():
@@ -42,25 +35,23 @@ def authenticate_gsheets_from_upload():
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
 
-# 🔢 Simulated trading data
+# 📊 Simulated market data
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
 macd_signal = random.choice(["BUY", "SELL", "NEUTRAL"])
 round_number_zone = round(round(current_price / 100) * 100)
 
-# ⚙️ App config
-
 st.markdown("<h1 style='text-align: center;'>🦎 Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
 
-# 🧭 Signal overview
+# 📋 Signal Overview
 st.subheader(f"Symbol: {symbol}")
 st.markdown(f"**Current Price:** `{current_price}`")
 st.markdown(f"**Nearest Round Number:** `{round_number_zone}`")
 st.markdown(f"**VWAP:** `{round(vwap_value, 2)}`")
 st.markdown(f"**MACD Signal:** `{macd_signal}`")
 
-# 🔥 MACD/VWAP Signal Heatmap — Inferno Edition
+# 🔥 Heatmap Visualization
 st.markdown("### 📊 MACD/VWAP Signal Heatmap")
 heatmap_data = np.random.randn(10, 10)
 fig, ax = plt.subplots(figsize=(8, 2.8))
@@ -75,7 +66,7 @@ ax.set_title("MACD/VWAP Signal Heatmap")
 plt.colorbar(cax, ax=ax, label="Signal Strength")
 st.pyplot(fig)
 
-# 📋 Recent signals
+# 📈 Last 5 Signals
 st.markdown("### 📈 Recent Signals")
 log_data = pd.DataFrame({
     "Time": pd.date_range(datetime.datetime.now() - datetime.timedelta(minutes=75), periods=5, freq="15min"),
@@ -84,7 +75,7 @@ log_data = pd.DataFrame({
 })
 st.table(log_data)
 
-# 🤖 Bot Controls
+# 🕹️ Bot Controls
 st.markdown("### 🤖 Bot Controls")
 col1, col2 = st.columns(2)
 with col1:
@@ -105,7 +96,6 @@ if client:
     try:
         sheet = client.open("Chameleon_Trade_Logs")
         worksheet = sheet.worksheet("Live_Trades")
-
         row = [
             datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
             "BUY",
@@ -118,9 +108,9 @@ if client:
         worksheet.append_row(row)
         st.success("✅ Trade logged to Google Sheet successfully.")
     except gspread.exceptions.SpreadsheetNotFound:
-        st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found. Please create it or share access with the service account.")
+        st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found.")
     except gspread.exceptions.WorksheetNotFound:
-        st.error("❌ Worksheet 'Live_Trades' not found. Please ensure it exists in the spreadsheet.")
+        st.error("❌ Worksheet 'Live_Trades' not found.")
     except Exception as e:
         st.error(f"❌ Failed to log trade: {e}")
 
