@@ -29,7 +29,7 @@ def authenticate_gsheets_from_upload():
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
         return None
 
-# 🔄 Simulated trading data (replace with live MT5 integration later)
+# 🔄 Simulated trading data
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
@@ -83,38 +83,28 @@ client = authenticate_gsheets_from_upload()
 
 if client:
     try:
-        # 🧠 Attempt to open the sheet
         sheet = client.open("Chameleon_Trade_Logs")
         worksheet = sheet.worksheet("Live_Trades")
-    except gspread.exceptions.SpreadsheetNotFound:
-        st.warning("⚠️ Sheet not found. Attempting to create 'Chameleon_Trade_Logs/Live_Trades'. Make sure your service account has edit permissions.")
-        try:
-            sheet = client.create("Chameleon_Trade_Logs")
-            worksheet = sheet.sheet1
-            worksheet.update_title("Live_Trades")
-            worksheet.append_row(["Time", "Action", "Symbol", "Price", "Volume", "Signal", "PnL"])
-        except Exception as e:
-            st.error(f"❌ Failed to create spreadsheet: {e}")
-            worksheet = None
-    except Exception as e:
-        st.error(f"❌ Failed to access Google Sheet: {e}")
-        worksheet = None
 
-    if worksheet:
-        try:
-            row = [
-                datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
-                "BUY",
-                symbol,
-                current_price,
-                1.0,
-                macd_signal,
-                "+124.67"
-            ]
-            worksheet.append_row(row)
-            st.success("✅ Trade logged to Google Sheet successfully.")
-        except Exception as e:
-            st.error(f"❌ Failed to log trade: {e}")
+        # Append the trade row
+        row = [
+            datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+            "BUY",
+            symbol,
+            current_price,
+            1.0,
+            macd_signal,
+            "+124.67"
+        ]
+        worksheet.append_row(row)
+        st.success("✅ Trade logged to Google Sheet successfully.")
+
+    except gspread.exceptions.SpreadsheetNotFound:
+        st.error("❌ Spreadsheet not found. Please ensure 'Chameleon_Trade_Logs' exists.")
+    except gspread.exceptions.WorksheetNotFound:
+        st.error("❌ Worksheet 'Live_Trades' not found. Please create it in your spreadsheet.")
+    except Exception as e:
+        st.error(f"❌ Failed to log trade: {e}")
 
 # 🧾 Footer
 st.caption("Built for mobile-first control and trade confidence using the Chameleon Logic.")
