@@ -7,7 +7,7 @@ import random
 import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-
+st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
 # 🔁 Manual + Auto-refresh toggle
 st.sidebar.markdown("## 🔄 Refresh Settings")
 auto_refresh = st.sidebar.checkbox("Enable Auto-Refresh (every 30 sec)", value=True)
@@ -50,7 +50,7 @@ macd_signal = random.choice(["BUY", "SELL", "NEUTRAL"])
 round_number_zone = round(round(current_price / 100) * 100)
 
 # ⚙️ App config
-st.set_page_config(page_title="Chameleon Dashboard", layout="centered")
+
 st.markdown("<h1 style='text-align: center;'>🦎 Chameleon Trading Dashboard</h1>", unsafe_allow_html=True)
 
 # 🧭 Signal overview
