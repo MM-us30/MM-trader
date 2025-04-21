@@ -8,16 +8,19 @@ import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# 🔁 Manual toggle for auto-refresh
-refresh_toggle = st.sidebar.checkbox("🔄 Auto-refresh every 30 sec", value=True)
+# 🔁 Manual + Auto-refresh toggle
+st.sidebar.markdown("## 🔄 Refresh Settings")
+auto_refresh = st.sidebar.checkbox("Enable Auto-Refresh (every 30 sec)", value=True)
+manual_refresh = st.sidebar.button("🔄 Refresh Now")
 
-# ⏱️ Auto-refresh every 30 seconds if enabled
-if refresh_toggle:
-    count = st.experimental_get_query_params().get("refresh_count", [0])[0]
-    if int(count) < 1000:
-        st.experimental_set_query_params(refresh_count=int(count) + 1)
-        st.experimental_rerun()
-    st.markdown(f"<script>setTimeout(() => window.location.reload(), 30000);</script>", unsafe_allow_html=True)
+# ⏱️ Auto-refresh logic (no deprecated methods)
+if auto_refresh or manual_refresh:
+    st.markdown(
+        """
+        <meta http-equiv="refresh" content="30">
+        """,
+        unsafe_allow_html=True,
+    )
 
 # 🔐 Google Sheets authentication
 def authenticate_gsheets_from_upload():
@@ -39,7 +42,7 @@ def authenticate_gsheets_from_upload():
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
 
-# 📈 Simulated trading data
+# 🔢 Simulated trading data
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
