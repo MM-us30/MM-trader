@@ -8,7 +8,7 @@ import json
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# ✅ Authenticate with Google Sheets using uploaded JSON key
+# 🔐 Authenticate with Google Sheets using uploaded JSON key
 def authenticate_gsheets_from_upload():
     uploaded_file = st.file_uploader("🔐 Upload your Google JSON key", type=["json"])
     if uploaded_file is not None:
@@ -24,12 +24,11 @@ def authenticate_gsheets_from_upload():
             return client
         except Exception as e:
             st.error(f"❌ Failed to authenticate: {e}")
-            return None
     else:
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
-        return None
+    return None
 
-# 🔄 Simulated trading data
+# 📈 Simulated trading data
 symbol = "US30"
 current_price = round(random.uniform(33500, 33700), 2)
 vwap_value = current_price - random.uniform(-20, 20)
@@ -46,7 +45,7 @@ st.markdown(f"**Nearest Round Number:** {round_number_zone}")
 st.markdown(f"**VWAP:** {round(vwap_value, 2)}")
 st.markdown(f"**MACD Signal:** {macd_signal}")
 
-# 🔥 Heatmap
+# 🔥 MACD/VWAP Heatmap
 st.markdown("### MACD/VWAP Heatmap")
 heatmap_data = np.random.randn(15, 15)
 fig, ax = plt.subplots()
@@ -83,10 +82,10 @@ client = authenticate_gsheets_from_upload()
 
 if client:
     try:
+        # Attempt to open the existing spreadsheet and worksheet
         sheet = client.open("Chameleon_Trade_Logs")
         worksheet = sheet.worksheet("Live_Trades")
 
-        # Append the trade row
         row = [
             datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
             "BUY",
@@ -100,9 +99,9 @@ if client:
         st.success("✅ Trade logged to Google Sheet successfully.")
 
     except gspread.exceptions.SpreadsheetNotFound:
-        st.error("❌ Spreadsheet not found. Please ensure 'Chameleon_Trade_Logs' exists.")
+        st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found. Please create it manually or share it with your service account.")
     except gspread.exceptions.WorksheetNotFound:
-        st.error("❌ Worksheet 'Live_Trades' not found. Please create it in your spreadsheet.")
+        st.error("❌ Worksheet 'Live_Trades' not found. Please ensure it exists inside the spreadsheet.")
     except Exception as e:
         st.error(f"❌ Failed to log trade: {e}")
 
