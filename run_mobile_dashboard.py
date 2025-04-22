@@ -119,24 +119,25 @@ st.markdown("### 📄 Google Sheets Logging")
 client = authenticate_gsheets_from_upload()
 
 # --- FORCE TEST TRADE ---
-if client and st.button("🧪 Force Dummy Trade"):
-    try:
-        sheet = client.open("Chameleon_Trade_Logs")
-        worksheet = sheet.worksheet("Live_Trades")
-        test_row = [
-            datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
-            "BUY",
-            symbol,
-            current_price,
-            1.0,
-            "TEST",
-            "+99.99"
-        ]
-        worksheet.append_row(test_row)
-        st.success("✅ Dummy trade logged for testing.")
-    except Exception as e:
-        st.error("❌ Failed to log dummy trade.")
-        st.exception(e)
+if client:
+    if st.button("🧪 Force Dummy Trade"):
+        try:
+            sheet = client.open("Chameleon_Trade_Logs")
+            worksheet = sheet.worksheet("Live_Trades")
+            test_row = [
+                datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+                "BUY",
+                symbol,
+                current_price,
+                1.0,
+                "TEST",
+                "+99.99"
+            ]
+            worksheet.append_row(test_row)
+            st.success("✅ Dummy trade logged for testing.")
+        except Exception as e:
+            st.error("❌ Failed to log dummy trade.")
+            st.exception(e)
 
 # --- LOGIC GATE ---
 if not manual_mode and evaluate_custom_logic(macd_signal, current_price, vwap_value, macd_condition, price_condition):
