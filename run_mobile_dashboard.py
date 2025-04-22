@@ -71,6 +71,30 @@ st.markdown(f"**Nearest Round Number:** `{round_number_zone}`")
 st.markdown(f"**VWAP:** `{round(vwap_value, 2)}`")
 st.markdown(f"**MACD Signal:** `{macd_signal}`")
 
+# --- RULE-BASED AI CONFIDENCE ENGINE ---
+def calculate_confidence(macd, price, vwap):
+    distance = abs(price - vwap)
+    if macd == "BUY" and price > vwap and distance > 15:
+        return 90
+    elif macd == "BUY" and price > vwap:
+        return 80
+    elif macd == "SELL" and price < vwap and distance > 15:
+        return 85
+    elif macd == "SELL" and price < vwap:
+        return 75
+    else:
+        return 60
+
+ai_confidence = calculate_confidence(macd_signal, current_price, vwap_value)
+confidence_color = "green" if ai_confidence >= 85 else "orange" if ai_confidence >= 70 else "red"
+st.markdown(f"<h4>🤖 AI Confidence in Trade Trigger: <span style='color:{confidence_color}'>{ai_confidence}%</span></h4>", unsafe_allow_html=True)
+
+# --- TIMER (Trade Window Countdown) ---
+if ai_confidence >= 75:
+    remaining_seconds = int(60 - (time.time() % 60))
+    st.markdown(f"⏱️ Valid for: `{remaining_seconds} sec`")
+
+
 # --- HEATMAP ---
 st.markdown("### 📊 MACD/VWAP Signal Heatmap")
 heatmap_data = np.random.randn(10, 10)
