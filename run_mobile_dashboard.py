@@ -28,7 +28,8 @@ if st.sidebar.button("🔁 Manual Refresh"):
     st.rerun()
 
 # --- AUTO REFRESH LOGIC ---
-if auto_refresh and time.time() - st.st.session_state.last_refresh > refresh_interval * 60:
+if auto_refresh and time.time() - st.session_state.last_refresh > refresh_interval * 60:
+
     st.session_state.last_refresh = time.time()
     st.rerun()
 
