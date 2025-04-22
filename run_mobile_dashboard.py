@@ -29,7 +29,6 @@ if st.sidebar.button("🔁 Manual Refresh"):
 
 # --- AUTO REFRESH LOGIC ---
 if auto_refresh and time.time() - st.session_state.last_refresh > refresh_interval * 60:
-
     st.session_state.last_refresh = time.time()
     st.rerun()
 
@@ -152,6 +151,49 @@ if evaluate_custom_logic(macd_signal, current_price, vwap_value, macd_condition,
             st.exception(e)
 else:
     st.warning("⏸ Conditions not met – no trade executed.")
+
+# --- PERFORMANCE DASHBOARD ---
+st.markdown("### 📊 Trade Performance Summary")
+if client:
+    try:
+        sheet = client.open("Chameleon_Trade_Logs")
+        worksheet = sheet.worksheet("Live_Trades")
+        data = worksheet.get_all_records()
+        df = pd.DataFrame(data)
+
+        if not df.empty:
+            df["PnL"] = df["PnL"].replace({"\$": "", ",": ""}, regex=True).astype(float)
+            total_trades = len(df)
+            total_pnl = df["PnL"].sum()
+            avg_pnl = df["PnL"].mean()
+            win_rate = (df["PnL"] > 0).mean() * 100
+            most_common_signal = df["Signal"].mode()[0]
+
+            st.metric("Total Trades", total_trades)
+            st.metric("Win Rate", f"{win_rate:.1f}%")
+            st.metric("Total PnL", f"${total_pnl:.2f}")
+            st.metric("Avg PnL per Trade", f"${avg_pnl:.2f}")
+            st.metric("Most Common Signal", most_common_signal)
+
+            st.markdown("#### PnL per Trade")
+            fig, ax = plt.subplots()
+            ax.plot(df["PnL"].values, marker="o")
+            ax.set_ylabel("PnL")
+            ax.set_title("PnL Over Trades")
+            st.pyplot(fig)
+
+            st.markdown("#### Signal Distribution")
+            signal_counts = df["Signal"].value_counts()
+            fig2, ax2 = plt.subplots()
+            ax2.pie(signal_counts, labels=signal_counts.index, autopct='%1.1f%%')
+            ax2.set_title("BUY vs SELL")
+            st.pyplot(fig2)
+
+        else:
+            st.info("No trade data available yet.")
+    except Exception as e:
+        st.error("Failed to load performance data.")
+        st.exception(e)
 
 # --- FOOTER ---
 st.caption("🔧 Built for mobile-first control and trade confidence using the Chameleon Logic.")
