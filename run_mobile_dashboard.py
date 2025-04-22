@@ -35,9 +35,13 @@ if auto_refresh and time.time() - st.session_state.last_refresh > refresh_interv
 # --- AUTH ---
 def authenticate_gsheets_from_upload():
     uploaded_file = st.file_uploader("🔐 Upload your Google JSON key", type=["json"])
+    
     if uploaded_file is not None:
+        st.success(f"✅ File uploaded: {uploaded_file.name}")  # 🔧 Confirm upload visibly
         try:
             content = json.load(uploaded_file)
+            st.write("📄 JSON parsed successfully.")  # 🔧 Confirm JSON loaded
+            
             scope = [
                 "https://spreadsheets.google.com/feeds",
                 "https://www.googleapis.com/auth/drive"
@@ -48,6 +52,7 @@ def authenticate_gsheets_from_upload():
             return client
         except Exception as e:
             st.error(f"❌ Failed to authenticate: {e}")
+            st.exception(e)  # 🔧 Show full traceback in debug
     else:
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
@@ -109,6 +114,7 @@ client = authenticate_gsheets_from_upload()
 
 if client:
     try:
+        st.write("📡 Connecting to Google Sheet...")  # 🔧 Add debug message
         sheet = client.open("Chameleon_Trade_Logs")
         worksheet = sheet.worksheet("Live_Trades")
         row = [
@@ -128,7 +134,7 @@ if client:
         st.error("❌ Worksheet 'Live_Trades' not found. Please ensure it exists in the spreadsheet.")
     except Exception as e:
         st.error(f"❌ Failed to log trade: {e}")
+        st.exception(e)  # 🔧 Show full error details
 
 # --- FOOTER ---
 st.caption("🔧 Built for mobile-first control and trade confidence using the Chameleon Logic.")
-
