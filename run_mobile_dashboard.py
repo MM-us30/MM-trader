@@ -176,6 +176,7 @@ elif manual_mode:
 else:
     st.warning("⏸ Conditions not met – no trade executed.")
 
+
 # --- PERFORMANCE DASHBOARD ---
 st.markdown("### 📊 Trade Performance Summary")
 if client:
@@ -186,33 +187,35 @@ if client:
         df = pd.DataFrame(data)
 
         if not df.empty:
-            df["PnL"] = df["PnL"].replace({"\$": "", ",": ""}, regex=True).astype(float)
-            total_trades = len(df)
-            total_pnl = df["PnL"].sum()
-            avg_pnl = df["PnL"].mean()
-            win_rate = (df["PnL"] > 0).mean() * 100
-            most_common_signal = df["Signal"].mode()[0]
+            if "PnL" in df.columns:
+                df["PnL"] = df["PnL"].replace({"\$": "", ",": ""}, regex=True).astype(float)
+                total_trades = len(df)
+                total_pnl = df["PnL"].sum()
+                avg_pnl = df["PnL"].mean()
+                win_rate = (df["PnL"] > 0).mean() * 100
+                most_common_signal = df["Signal"].mode()[0]
 
-            st.metric("Total Trades", total_trades)
-            st.metric("Win Rate", f"{win_rate:.1f}%")
-            st.metric("Total PnL", f"${total_pnl:.2f}")
-            st.metric("Avg PnL per Trade", f"${avg_pnl:.2f}")
-            st.metric("Most Common Signal", most_common_signal)
+                st.metric("Total Trades", total_trades)
+                st.metric("Win Rate", f"{win_rate:.1f}%")
+                st.metric("Total PnL", f"${total_pnl:.2f}")
+                st.metric("Avg PnL per Trade", f"${avg_pnl:.2f}")
+                st.metric("Most Common Signal", most_common_signal)
 
-            st.markdown("#### PnL per Trade")
-            fig, ax = plt.subplots()
-            ax.plot(df["PnL"].values, marker="o")
-            ax.set_ylabel("PnL")
-            ax.set_title("PnL Over Trades")
-            st.pyplot(fig)
+                st.markdown("#### PnL per Trade")
+                fig, ax = plt.subplots()
+                ax.plot(df["PnL"].values, marker="o")
+                ax.set_ylabel("PnL")
+                ax.set_title("PnL Over Trades")
+                st.pyplot(fig)
 
-            st.markdown("#### Signal Distribution")
-            signal_counts = df["Signal"].value_counts()
-            fig2, ax2 = plt.subplots()
-            ax2.pie(signal_counts, labels=signal_counts.index, autopct='%1.1f%%')
-            ax2.set_title("BUY vs SELL")
-            st.pyplot(fig2)
-
+                st.markdown("#### Signal Distribution")
+                signal_counts = df["Signal"].value_counts()
+                fig2, ax2 = plt.subplots()
+                ax2.pie(signal_counts, labels=signal_counts.index, autopct='%1.1f%%')
+                ax2.set_title("BUY vs SELL")
+                st.pyplot(fig2)
+            else:
+                st.warning("⚠️ 'PnL' column not found in sheet. Please log at least one trade to initialize.")
         else:
             st.info("No trade data available yet.")
     except Exception as e:
@@ -221,3 +224,4 @@ if client:
 
 # --- FOOTER ---
 st.caption("🔧 Built for mobile-first control and trade confidence using the Chameleon Logic.")
+
