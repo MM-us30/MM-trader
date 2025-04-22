@@ -35,13 +35,13 @@ if auto_refresh and time.time() - st.session_state.last_refresh > refresh_interv
 # --- AUTH ---
 def authenticate_gsheets_from_upload():
     uploaded_file = st.file_uploader("🔐 Upload your Google JSON key", type=["json"])
-    
+
     if uploaded_file is not None:
-        st.success(f"✅ File uploaded: {uploaded_file.name}")  # 🔧 Confirm upload visibly
+        st.success(f"✅ File uploaded: {uploaded_file.name}")
         try:
             content = json.load(uploaded_file)
-            st.write("📄 JSON parsed successfully.")  # 🔧 Confirm JSON loaded
-            
+            st.write("📄 JSON parsed successfully.")
+
             scope = [
                 "https://spreadsheets.google.com/feeds",
                 "https://www.googleapis.com/auth/drive"
@@ -52,7 +52,7 @@ def authenticate_gsheets_from_upload():
             return client
         except Exception as e:
             st.error(f"❌ Failed to authenticate: {e}")
-            st.exception(e)  # 🔧 Show full traceback in debug
+            st.exception(e)
     else:
         st.info("📥 Please upload your JSON key to enable Google Sheets logging.")
     return None
@@ -95,46 +95,62 @@ log_data = pd.DataFrame({
 })
 st.table(log_data)
 
-# --- BOT CONTROLS ---
-st.markdown("### 🤖 Bot Controls")
-col1, col2 = st.columns(2)
-with col1:
-    st.button("▶️ Start Chameleon Bot")
-with col2:
-    st.button("⏸ Pause Bot")
+# --- CUSTOM BOT LOGIC CONFIG ---
+st.markdown("### ⚙️ Custom Trade Trigger Rules")
 
-# --- POSITION & PNL ---
-st.markdown("### 💰 Position & PnL")
-st.metric(label="Open Position", value="BUY 1.0 lot")
-st.metric(label="Current PnL", value="+$124.67")
+macd_condition = st.selectbox("MACD must be:", ["BUY", "SELL", "NEUTRAL"])
+price_condition = st.selectbox("Price must be:", ["> VWAP", "< VWAP", "= VWAP"])
 
-# --- SHEETS LOGGING ---
-st.markdown("### 📄 Google Sheets Logging")
-client = authenticate_gsheets_from_upload()
+def evaluate_custom_logic(macd, price, vwap, macd_rule, price_rule):
+    macd_match = (macd == macd_rule)
 
-if client:
-    try:
-        st.write("📡 Connecting to Google Sheet...")  # 🔧 Add debug message
-        sheet = client.open("Chameleon_Trade_Logs")
-        worksheet = sheet.worksheet("Live_Trades")
-        row = [
-            datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
-            "BUY",
-            symbol,
-            current_price,
-            1.0,
-            macd_signal,
-            "+124.67"
-        ]
-        worksheet.append_row(row)
-        st.success("✅ Trade logged to Google Sheet successfully.")
-    except gspread.exceptions.SpreadsheetNotFound:
-        st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found. Please create it or share access with the service account.")
-    except gspread.exceptions.WorksheetNotFound:
-        st.error("❌ Worksheet 'Live_Trades' not found. Please ensure it exists in the spreadsheet.")
-    except Exception as e:
-        st.error(f"❌ Failed to log trade: {e}")
-        st.exception(e)  # 🔧 Show full error details
+    if price_rule == "> VWAP":
+        price_match = price > vwap
+    elif price_rule == "< VWAP":
+        price_match = price < vwap
+    else:
+        price_match = round(price, 2) == round(vwap, 2)
+
+    return macd_match and price_match
+
+# --- LOGIC GATE ---
+if evaluate_custom_logic(macd_signal, current_price, vwap_value, macd_condition, price_condition):
+    st.success("🎯 Conditions met – trade triggered!")
+
+    # --- POSITION & PNL ---
+    st.markdown("### 💰 Position & PnL")
+    st.metric(label="Open Position", value="BUY 1.0 lot")
+    st.metric(label="Current PnL", value="+$124.67")
+
+    # --- SHEETS LOGGING ---
+    st.markdown("### 📄 Google Sheets Logging")
+    client = authenticate_gsheets_from_upload()
+
+    if client:
+        try:
+            st.write("📡 Connecting to Google Sheet...")
+            sheet = client.open("Chameleon_Trade_Logs")
+            worksheet = sheet.worksheet("Live_Trades")
+            row = [
+                datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+                "BUY",
+                symbol,
+                current_price,
+                1.0,
+                macd_signal,
+                "+124.67"
+            ]
+            worksheet.append_row(row)
+            st.success("✅ Trade logged to Google Sheet successfully.")
+        except gspread.exceptions.SpreadsheetNotFound:
+            st.error("❌ Spreadsheet 'Chameleon_Trade_Logs' not found. Please create it or share access with the service account.")
+        except gspread.exceptions.WorksheetNotFound:
+            st.error("❌ Worksheet 'Live_Trades' not found. Please ensure it exists in the spreadsheet.")
+        except Exception as e:
+            st.error(f"❌ Failed to log trade: {e}")
+            st.exception(e)
+else:
+    st.warning("⏸ Conditions not met – no trade executed.")
 
 # --- FOOTER ---
 st.caption("🔧 Built for mobile-first control and trade confidence using the Chameleon Logic.")
