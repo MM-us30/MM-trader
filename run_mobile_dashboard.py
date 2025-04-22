@@ -28,7 +28,7 @@ if st.sidebar.button("🔁 Manual Refresh"):
     st.rerun()
 
 # --- AUTO REFRESH LOGIC ---
-if auto_refresh and time.time() - st.session_state.last_refresh > refresh_interval * 60:
+if auto_refresh and time.time() - st.st.session_state.last_refresh > refresh_interval * 60:
     st.session_state.last_refresh = time.time()
     st.rerun()
 
@@ -113,6 +113,10 @@ def evaluate_custom_logic(macd, price, vwap, macd_rule, price_rule):
 
     return macd_match and price_match
 
+# --- SHEETS LOGGING (always visible) ---
+st.markdown("### 📄 Google Sheets Logging")
+client = authenticate_gsheets_from_upload()
+
 # --- LOGIC GATE ---
 if evaluate_custom_logic(macd_signal, current_price, vwap_value, macd_condition, price_condition):
     st.success("🎯 Conditions met – trade triggered!")
@@ -121,10 +125,6 @@ if evaluate_custom_logic(macd_signal, current_price, vwap_value, macd_condition,
     st.markdown("### 💰 Position & PnL")
     st.metric(label="Open Position", value="BUY 1.0 lot")
     st.metric(label="Current PnL", value="+$124.67")
-
-    # --- SHEETS LOGGING ---
-    st.markdown("### 📄 Google Sheets Logging")
-    client = authenticate_gsheets_from_upload()
 
     if client:
         try:
