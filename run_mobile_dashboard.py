@@ -110,14 +110,6 @@ ax.set_title("MACD/VWAP Signal Heatmap")
 plt.colorbar(cax, ax=ax, label="Signal Strength")
 st.pyplot(fig)
 
-# --- SIGNAL LOG TABLE ---
-st.markdown("### 📈 Recent Signals")
-log_data = pd.DataFrame({
-    "Time": pd.date_range(datetime.datetime.now() - datetime.timedelta(minutes=75), periods=5, freq="15min"),
-    "Signal": ["BUY", "SELL", "BUY", "SELL", "BUY"],
-    "Price": np.random.uniform(33500, 33700, 5).round(2)
-})
-st.table(log_data)
 
 # --- CUSTOM BOT LOGIC CONFIG ---
 st.markdown("### ⚙️ Custom Trade Trigger Rules")
