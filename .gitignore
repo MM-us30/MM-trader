@@ -1,0 +1,34 @@
+# --- Chameleon Dashboard Git Ignore File ---
+
+# 🔐 Do NOT commit your Google Sheets key!
+google_key.json
+
+# 🗃️ Python bytecode and cache
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# 🚫 Mac / Windows OS files
+.DS_Store
+Thumbs.db
+
+# 🧪 Environment / package files
+.env
+.venv/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# 🧼 Jupyter / notebook checkpoints
+.ipynb_checkpoints/
+
+# 📦 VS Code or JetBrains IDE settings
+.vscode/
+.idea/
+
+# 📈 Streamlit logs and cache
+.streamlit/
