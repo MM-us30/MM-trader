@@ -184,8 +184,7 @@ if client:
         sheet = client.open("Chameleon_Trade_Logs")
         worksheet = sheet.worksheet("Live_Trades")
         expected_headers = ["Time", "Signal", "Symbol", "Price", "Size", "Strategy", "PnL"]
-data = worksheet.get_all_records(expected_headers=expected_headers)
-
+        data = worksheet.get_all_records(expected_headers=expected_headers)
         df = pd.DataFrame(data)
 
         if not df.empty:
